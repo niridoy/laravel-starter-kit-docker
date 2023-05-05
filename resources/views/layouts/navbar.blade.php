@@ -1,6 +1,6 @@
 <header class="header">
         <div class="page-brand">
-            <a class="link" href="{{route('Dashboard')}}">
+            <a class="link" href="{{route('dashboard')}}">
                     <span class="brand">{{ env('APP_NAME') }}
                         {{--<span class="brand-tip">PANEL</span>--}}
                     </span>
@@ -146,12 +146,12 @@
                         {{--<a class="dropdown-item" href="profile.html"><i class="fa fa-cog"></i>Settings</a>
                         <a class="dropdown-item" href="javascript:;"><i class="fa fa-support"></i>Support</a>--}}
                         <li class="dropdown-divider"></li>
-                        <a class="dropdown-item" href="{{ route('WebLogout') }}"
+                        <a class="dropdown-item" href="{{ route('logout') }}"
                            onclick="event.preventDefault();
                                                 document.getElementById('logout-form').submit();">
                             <i class="fa fa-power-off"></i> {{ __('Logout') }}
                         </a>
-                        <form id="logout-form" action="{{ route('WebLogout') }}" method="POST" style="display: none;">
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                             @csrf
                         </form>
                     </ul>

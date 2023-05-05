@@ -16,7 +16,7 @@
 
             <li>
                 <a class="{{ (request()->routeIs('items.index')) ? 'active' : '' }}" href="{{route('items.index')}}"><i class="sidebar-item-icon fa fa-th-large"></i>
-                    <span class="nav-label">Slot Data</span>
+                    <span class="nav-label">Item</span>
                 </a>
             </li>
         </ul>

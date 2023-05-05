@@ -6,75 +6,76 @@ use App\Models\Item;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Project;
+use App\Services\ImageService;
 use Toastr;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
 
 class ItemController extends Controller
 {
     public function index()
     {
-        $slots = Item::get();
-
         return view('item.index',[
-            'slots' => $slots
+            'items' => Item::get()
         ]);
     }
 
     public function create()
     {
-        return view('item.create',[
-            'projects' => Item::isActive()->select('id','name','code')->get()
-        ]);
+        return view('item.create');
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'name' => 'required',
-            'code' => 'required','unique:slots,code',
-            'project_id' => 'required',
-            'is_active' => 'required'
+            'image' => 'mimes:jpeg,jpg,png,gif|required|max:10000'
         ]);
+
         try {
-            $data = $request->all();
-            $data['created_user_id'] = auth()->id();
-            Slot::create($data);
-            Toastr::success('Slot has been created successfully!', 'Success', ["positionClass" => "toast-top-right"]);
-        } catch (\Throwable $th) {
+            $fileName = (new ImageService)->store('public/images/items', $request->image);
+            Item::create([
+                'name' => $request['name'],
+                'image' => $fileName
+            ]);
+            Toastr::success('Item has been created successfully!', 'Success', ["positionClass" => "toast-top-right"]);
+        } catch (\Throwable $th) { //dd($th);
             Toastr::error('Something wrong, please contact with admin!', 'Error', ["positionClass" => "toast-top-right"]);
         }
         return redirect()->back();
     }
 
-    public function edit(Slot $slot)
+    public function edit(Item $item)
     {
         return view('item.edit',[
-            'slot' => $slot,
-            'projects' => Project::isActive()->select('id','name','code')->get()
+            'item' => $item
         ]);
     }
 
-    public function update(Request $request, Slot $slot)
+    public function update(Request $request, Item $item)
     {
         $request->validate([
             'name' => 'required',
-            'code' => 'required','unique:slots,code,' . $slot->id ,
-            'project_id' => 'required',
-            'is_active' => 'required'
+            'image' => 'mimes:jpeg,jpg,png,gif|nullable|max:10000'
         ]);
+
         try {
-            $slot->update($request->all());
-            Toastr::success('Slot has been updated successfully!', 'Success', ["positionClass" => "toast-top-right"]);
+            $item->name = $request->name;
+            if ($request->has('image')) $item->image = (new ImageService)->store('public/images/items', $request->image, $item->image);
+            $item->save();
+            Toastr::success('Item has been updated successfully!', 'Success', ["positionClass" => "toast-top-right"]);
         } catch (\Throwable $th) {
             Toastr::error('Something wrong, please contact with admin!', 'Error', ["positionClass" => "toast-top-right"]);
         }
         return redirect()->back();
     }
 
-    public function destroy(Slot $slot)
+    public function destroy(Item $item)
     {
         try {
-            $slot->delete();
-            Toastr::success('Slot has been deleted successfully!', 'Success', ["positionClass" => "toast-top-right"]);
+            (new ImageService)->delete('images/items/' . $item->image);
+            $item->delete();
+            Toastr::success('Item has been deleted successfully!', 'Success', ["positionClass" => "toast-top-right"]);
         } catch (\Throwable $th) {
             DB::rollBack();
             Toastr::error('Something wrong, please contact with admin!', 'Error', ["positionClass" => "toast-top-right"]);

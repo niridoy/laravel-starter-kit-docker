@@ -30,9 +30,9 @@
                     <div class="input-icon"><i class="fa fa-envelope"></i></div>
                     <input class="form-control" type="email" name="email" placeholder="Email" autocomplete="off">
                     @error('email')
-                    <span class="help-block" role="alert">
-                        <strong>{{ $message }}</strong>
-                    </span>
+                        <span class="help-block" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
                     @enderror
                 </div>
             </div>

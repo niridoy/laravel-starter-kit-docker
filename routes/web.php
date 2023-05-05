@@ -13,10 +13,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('dashboard', [DashboardController::class,'index'])->name('Dashboard');
+    Route::post('logout', [AuthenticateController::class,'logout'])->name('logout');
+
+    Route::get('/profile',[ProfileCOn::class, 'profile'])->name('user.profile');
+    Route::post('/profile/update',[DashboardController::class, 'update'])->name('user.profile.update');
+
+    Route::resource('users', UserController::class);
+    Route::resource('slots', SlotController::class);
+});
